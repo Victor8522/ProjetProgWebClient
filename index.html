@@ -1,48 +1,80 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
-    <script src="wmo-code.json" type="text/javascript"></script>
+    <script defer src="code.js"></script>
     <script defer src="script.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ma Météo</title>
 </head>
+
 <body>
-
     <div class="container">
-        <header>
-            <h1 id="city">Blois</h1>
-            <p id="date"></p>
-            <p id="meteo"></p>
-        </header>
+        <!-- <div class="card">
+            <header>
+                <h1 id="city">Blois</h1>
+                <p id="date"></p>
+                <p id="meteo"></p>
+                <img id="image"/>
+            </header>
 
-        <div class="weather-now">
-            <div class="temp-main"><p id="temp-main"></p></div>
-            <p id="meteoG"></p>
+            <div class="weather-now">
+                <div class="temp-main">
+                    <p id="temp-main"></p>
+                </div>
+                <p id="meteoG"></p>
+                <img id="imageG"/>
+            </div>
+
+            <div class="weather-details">
+                <div class="detail-card">
+                    <span class="label">Min</span>
+                    <span class="value">
+                        <p id="temp-min"></p>
+                    </span>
+                </div>
+                <div class="detail-card">
+                    <span class="label">Max</span>
+                    <span class="value">
+                        <p id="temp-max"></p>
+                    </span>
+                </div>
+                <div class="detail-card">
+                    <span class="label">Humidité</span>
+                    <span class="value">
+                        <p id="humidity"></p>
+                    </span>
+                </div>
+                <div class="detail-card">
+                    <span class="label">Vent</span>
+                    <span class="value">
+                        <p id="wind"></p>
+                    </span>
+                </div>
+            </div>
+
+            <button class="refresh-btn">Mettre à jour</button>
         </div>
 
-        <div class="weather-details">
-            <div class="detail-card">
-                <span class="label">Min</span>
-                <span class="value"><p id="temp-min"></p></span>
-            </div>
-            <div class="detail-card">
-                <span class="label">Max</span>
-                <span class="value"><p id="temp-max"></p></span>
-            </div>
-            <div class="detail-card">
-                <span class="label">Humidité</span>
-                <span class="value"><p id="humidity"></p></span>
-            </div>
-            <div class="detail-card">
-                <span class="label">Vent</span>
-                <span class="value"><p id="wind"></p></span>
-            </div>
-        </div>
+        <div class="card">
+            <header>
+                <h1 id="city">Blois</h1>
+                <p id="date"></p>
+                <p id="meteo"></p>
+            </header>
 
-        <button class="refresh-btn">Mettre à jour</button>
+            <div class="weather-now">
+            </div>
+
+            <div class="weather-details">
+            </div>
+        </div> -->
     </div>
 
+    <button class="card" id="add-card-btn">Ajouter une ville</button>
+
 </body>
+
 </html>
