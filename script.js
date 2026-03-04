@@ -126,6 +126,8 @@ function updateCard(ville, data) {
     wind.innerHTML = data.current.wind_speed_10m + data.current_units.wind_speed_10m;
 }
 
+
+
 class Ville {
   constructor(id, nom) {
     this.id = id;
@@ -142,6 +144,10 @@ class Ville {
 
 }
 
+const villes = [
+    new Ville(1, "Blois")
+];
+
 // let ville = new Ville(1, "Blois");
 
 // newCard(ville.getId());
@@ -154,6 +160,14 @@ function addCard() {
     newCard(ville.getId());
     updateCard(ville, data);
 }
+
+function addCard(ville, data) {
+    newCard(ville.getId());
+    updateCard(ville, data);
+}
+
+addCard(villes[0], data);
+
 
 const addCardBtn = document.getElementById('add-card-btn');
 addCardBtn.addEventListener('click', addCard);   
