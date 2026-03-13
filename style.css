@@ -23,10 +23,15 @@ body {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    justify-items: center;
 }
 
 .card {
     width: 36vh;
+    min-height: 50vh;
     max-width: 450px;
     background: var(--card-bg);
     backdrop-filter: blur(10px);
@@ -37,7 +42,12 @@ body {
     text-align: center;
 }
 
-button.card {
+button {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    border-radius: 20px;
     width: auto;
     padding: 1rem 2rem;
     margin: 2rem;
@@ -45,6 +55,7 @@ button.card {
     position: sticky;
     bottom: 1vh;
 }
+
 h1 {
     margin-top: 0;
     font-weight: 300;
@@ -105,4 +116,51 @@ h1 {
 
 .refresh-btn:hover {
     transform: scale(1.05);
+}
+
+.btn-supprimer {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-left: auto;
+    width: 4vh;
+    height: 4vh;
+    text-align: center;
+    transition: transform 0.2s;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.btn-supprimer:hover {
+    transform: scale(1.1);
+}
+
+
+header {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- NOUVEAU STYLE POUR MÉTÉO GÉNÉRALE --- */
+/* --- les element p et img de cette classe doivent etre un au dessus de l'autre mais assez proches --- */
+.meteo {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0px;
+    justify-items: center;
+
+}
+
+.meteo img {
+    width: 12vh;
+    height: 12vh;
+    margin-bottom: 0%;
+}
+
+.meteo p {
+    margin-top: 0%;
 }
