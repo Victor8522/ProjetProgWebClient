@@ -1,87 +1,174 @@
-        /* --- CONFIGURATION RAPIDE --- */
-        :root {
-            --bg-color: #e0eafc;
-            --accent-color: #6a11cb;
-            --text-color: #2d3436;
-            --card-bg: rgba(255, 255, 255, 0.8);
-        }
+/* ==========================================
+   1. VARIABLES & CONFIGURATION
+   ========================================== */
+:root {
+    --bg-color: #e0eafc;
+    --accent-color: #6a11cb;
+    --text-color: #2d3436;
+    --card-bg: rgba(255, 255, 255, 0.8);
+    
+    /* On garde des ombres en PX pour la précision du rendu visuel */
+    --shadow-main: 0 0.9vh 2.8vh rgba(0, 0, 0, 0.2);
+}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            background-attachment: fixed;
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    background-attachment: fixed;
+    color: var(--text-color);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
 
-        .container {
-            width: 90%;
-            max-width: 450px;
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            text-align: center;
-        }
+/* ==========================================
+   2. STRUCTURE DE MISE EN PAGE
+   ========================================== */
+.container {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
 
-        h1 { margin-top: 0; font-weight: 300; }
+.card {
+    width: 36vh;
+    min-height: 50vh;
+    max-width: 450px; /* Gardé en PX (voir explications plus bas) */
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    padding: 1.8vh; 
+    margin: 1.8vh;
+    border-radius: 1.8vh;
+    box-shadow: var(--shadow-main);
+    text-align: center;
+    position: relative; /* Nécessaire pour le bouton supprimer absolu */
+}
 
-        /* --- SECTION ACTUELLE --- */
-        .weather-now {
-            margin: 20px 0;
-        }
+/* ==========================================
+   3. TYPOGRAPHIE & TITRES
+   ========================================== */
+h1 {
+    margin-top: 0;
+    font-weight: 300; /* Environ 2rem */
+    font-size: 3.7vh;
+}
 
-        .temp-main {
-            font-size: 4rem;
-            font-weight: bold;
-            margin: 10px 0;
-            color: var(--accent-color);
-        }
+.weather-now {
+    margin: 1.8vh 0;
+}
 
-        /* --- GRILLE DES DÉTAILS --- */
-        .weather-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-            border-top: 1px solid rgba(0,0,0,0.1);
-            padding-top: 20px;
-        }
+.temp-main {
+    font-size: 7.4vh; /* Environ 4rem */
+    font-weight: bold;
+    margin: 0.9vh 0;
+    color: var(--accent-color);
+}
 
-        .detail-card {
-            background: rgba(255, 255, 255, 0.5);
-            padding: 15px;
-            border-radius: 12px;
-        }
+/* ==========================================
+   4. ICONES & AFFICHAGE MÉTÉO
+   ========================================== */
+.meteo {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    justify-items: center;
+}
 
-        .label {
-            display: block;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            opacity: 0.7;
-            margin-bottom: 5px;
-        }
+.meteo img {
+    width: 11vh;
+    height: 11vh;
+    margin-bottom: 0;
+}
 
-        .value {
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
+.meteo p {
+    margin-top: 0;
+    font-size: 1.5vh;
+}
 
-        /* Bouton pour plus tard (API) */
-        .refresh-btn {
-            margin-top: 25px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 25px;
-            background: var(--accent-color);
-            color: white;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
+/* ==========================================
+   5. GRILLE DE DÉTAILS
+   ========================================== */
+.weather-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4vh;
+    margin-top: 1.8vh;
+    border-top: 1px solid rgba(0, 0, 0, 0.1); /* Gardé en PX pour la finesse */
+    padding-top: 1.8vh;
+}
 
-        .refresh-btn:hover { transform: scale(1.05); }
+.detail-card {
+    background: rgba(255, 255, 255, 0.5);
+    padding: 0.4vh;
+    border-radius: 1.1vh;
+}
+
+.label {
+    display: block;
+    font-size: 1.75vh;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 0.4vh;
+}
+
+.value {
+    font-size: 2.7vh;
+    font-weight: 600;
+}
+
+/* ==========================================
+   6. BOUTONS & INTERACTION
+   ========================================== */
+.refresh-btn {
+    margin-top: 2.3vh;
+    padding: 0.9vh 1.8vh;
+    border: none;
+    border-radius: 2.3vh;
+    background: var(--accent-color);
+    color: white;
+    font-size: 1.3vh;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.refresh-btn:hover {
+    transform: scale(1.05);
+}
+
+.btn-supprimer {
+    background: #e74c3c;
+    color: #ffddd9;
+    font-size: 2.5vh;
+    font-weight: 550;
+    border: none;
+    border-radius: 2.3vh;
+    cursor: pointer;
+    width: 3.7vh;
+    height: 3.7vh;
+    text-align: center;
+    transition: transform 0.2s;
+    position: absolute;
+    top: 0.5vh;
+    right: 0.5vh;
+}
+
+.btn-supprimer:hover {
+    transform: scale(1.1);
+}
+
+.button-sticky {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-main);
+    text-align: center;
+    border-radius: 1.8vh;
+    padding: 0.9vh 1.8vh;
+    margin: 1.8vh;
+    font-size: 1.7vh;
+    position: sticky;
+    bottom: 1vh;
+}
