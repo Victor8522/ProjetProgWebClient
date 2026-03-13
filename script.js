@@ -52,23 +52,33 @@ function newCard(id) {
     let header = document.createElement('header');
     card.appendChild(header);
     let weather_now = document.createElement('div');
+    weather_now.className = "weather-now";
     card.appendChild(weather_now);
     let weather_details = document.createElement('div');
+    weather_details.className = "weather-details";
     card.appendChild(weather_details);
 
+    let BtnSupprimer = document.createElement('button');
+    BtnSupprimer.className = "btn-supprimer";
+    BtnSupprimer.textContent = "X";
+    header.appendChild(BtnSupprimer);
     let city = document.createElement('h1');
     city.id = "city" + id;
     header.appendChild(city);
     let date = document.createElement('p');
     date.id = "date" + id;
     header.appendChild(date);
-    let meteo = document.createElement('p');
-    meteo.id = "meteo" + id;
-    header.appendChild(meteo);
+    let meteoDiv = document.createElement('div');
+    meteoDiv.className = "meteo";
+    header.appendChild(meteoDiv);
+    
     let image = document.createElement('img');
     image.id = "image" + id;
-    header.appendChild(image);
-
+    meteoDiv.appendChild(image);
+    let meteo = document.createElement('p');
+    meteo.id = "meteo" + id;
+    meteoDiv.appendChild(meteo);
+    
     let class_temp_main = document.createElement('div');
     class_temp_main.className = "temp-main";
     weather_now.appendChild(class_temp_main);
@@ -76,26 +86,43 @@ function newCard(id) {
     temp_main.id = "temp-main" + id;
     class_temp_main.appendChild(temp_main);
 
-    let meteoG = document.createElement('p');
-    meteoG.id = "meteoG" + id;
-    weather_now.appendChild(meteoG);
-    let imageG = document.createElement('img');
-    imageG.id = "imageG" + id;
-    weather_now.appendChild(imageG);
-
-    let temp_min = document.createElement('p');
-    temp_min.id = "temp-min" + id;
-    weather_details.appendChild(temp_min);
-    let temp_max = document.createElement('p');
-    temp_max.id = "temp-max" + id;
-    weather_details.appendChild(temp_max);
-    let humidity = document.createElement('p');
-    humidity.id = "humidity" + id;
-    weather_details.appendChild(humidity);
-    let wind = document.createElement('p');
-    wind.id = "wind" + id;
-    weather_details.appendChild(wind);
+    detailCard("temp-min", id, weather_details);
+    detailCard("temp-max", id, weather_details);
+    detailCard("humidity", id, weather_details);
+    detailCard("wind", id, weather_details);
+    // let temp_min = document.createElement('p');
+    // temp_min.id = "temp-min" + id;
+    // weather_details.appendChild(temp_min);
+    // let temp_max = document.createElement('p');
+    // temp_max.id = "temp-max" + id;
+    // weather_details.appendChild(temp_max);
+    // let humidity = document.createElement('p');
+    // humidity.id = "humidity" + id;
+    // weather_details.appendChild(humidity);
+    // let wind = document.createElement('p');
+    // wind.id = "wind" + id;
+    // weather_details.appendChild(wind);
 }
+
+function detailCard(parm, id, weather_details) {
+    let detail_card = document.createElement('div');
+    detail_card.className = "detail-card";
+    weather_details.appendChild(detail_card);
+
+    let label = document.createElement('span');
+    label.className = "label";
+    label.textContent = parm;
+    detail_card.appendChild(label);
+
+    let value_span = document.createElement('span');
+    value_span.className = "value";
+    detail_card.appendChild(value_span);
+
+    let value = document.createElement('p');
+    value.id = parm + id;
+    value_span.appendChild(value);
+}
+
 
 function updateCard(ville, data) {
     let id = ville.getId();
@@ -103,7 +130,7 @@ function updateCard(ville, data) {
     const city = document.getElementById('city' + id);
     city.innerHTML = ville.getNom();
     const date = document.getElementById('date' + id);
-    date.innerHTML = data.daily.time[0];
+    date.innerHTML = convertDate(data.daily.time[0]);
     const meteo = document.getElementById('meteo' + id);
     meteo.innerHTML = code["" + data.current.weather_code].day.description;
     const image = document.getElementById('image' + id);
@@ -111,10 +138,6 @@ function updateCard(ville, data) {
 
     const temp_main = document.getElementById('temp-main' + id);
     temp_main.innerHTML = data.current.temperature_2m + data.current_units.temperature_2m;
-    const meteoG = document.getElementById('meteoG' + id);
-    meteoG.innerHTML = code["" + data.daily.weather_code[0]].day.description;
-    const imageG = document.getElementById('imageG' + id);
-    imageG.src = code["" + data.daily.weather_code[0]].day.image;
 
     const temp_min = document.getElementById('temp-min' + id);
     temp_min.innerHTML = data.daily.temperature_2m_min[0] + data.daily_units.temperature_2m_min;
@@ -173,6 +196,7 @@ const addCardBtn = document.getElementById('add-card-btn');
 addCardBtn.addEventListener('click', addCard);   
 document.getElementById('add-card-btn').addEventListener('click', addCard); 
 
+
 function refresh() {
     let cards = document.querySelectorAll('.card');
     cards.forEach(card => {
@@ -181,4 +205,36 @@ function refresh() {
         updateCard(ville, data);
     });
 }
+
+const villeFile = [];
+
+// mettre a jour le fichier de ville en ajoutant la ville a la premiere position et en supprimant la ville si elle existe deja
+function miseAJourFile(f, str) {
+    let index = f.indexOf(str);
+    if (index !== -1) {
+        f.splice(index, 1);
+    }
+    f.unshift(str);
+}
+
+// ajouter de option dans une datalist html a l aide d'une liste de chaine de caractere
+function addOptionToDatalist(datalistId, list) {
+    const datalist = document.getElementById(datalistId);
+    list.forEach(optionValue => {
+        const option = document.createElement('option');
+        option.value = optionValue;
+        datalist.appendChild(option);
+    });
+}
+
+// convertir un string en 'yyyy-mm-dd' format 'dd mois yyyy'
+function convertDate(dateStr) {
+    const date = new Date(dateStr);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('fr-FR', options);
+}
+    
+
+
+
 

@@ -106,3 +106,50 @@ h1 {
 .refresh-btn:hover {
     transform: scale(1.05);
 }
+
+.btn-supprimer {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-left: auto;
+    width: 4vh;
+    height: 4vh;
+    text-align: center;
+    transition: transform 0.2s;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.btn-supprimer:hover {
+    transform: scale(1.1);
+}
+
+
+header {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- NOUVEAU STYLE POUR MÉTÉO GÉNÉRALE --- */
+/* --- les element p et img de cette classe doivent etre un au dessus de l'autre mais assez proches --- */
+.meteo {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0px;
+    justify-items: center;
+
+}
+
+.meteo img {
+    width: 12vh;
+    height: 12vh;
+    margin-bottom: 0%;
+}
+
+.meteo p {
+    margin-top: 0%;
+}
