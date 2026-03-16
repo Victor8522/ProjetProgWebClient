@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails Météo</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script defer src="code.js"></script>
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <div class="container detail-page">
+
+        <div class="detail-section">
+            <h1 id="ville-nom">Chargement...</h1>
+
+            <div class="meteo">
+                <img id="detail-icon" src="" alt="icône météo">
+                <p id="detail-desc"></p>
+            </div>
+
+            <div class="weather-details">
+                <div class="detail-card">
+                    <span class="label">Température</span>
+                    <span class="value"><span id="temp-val">--</span> °C</span>
+                </div>
+                <div class="detail-card">
+                    <span class="label">Ressenti</span>
+                    <span class="value"><span id="ressenti">--</span> °C</span>
+                </div>
+                <div class="detail-card">
+                    <span class="label">Humidité</span>
+                    <span class="value"><span id="humidite">--</span> %</span>
+                </div>
+                <div class="detail-card">
+                    <span class="label">Précipitations</span>
+                    <span class="value"><span id="pluie">--</span> mm</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h2>Température sur 24h</h2>
+            <canvas id="tempChart"></canvas>
+        </div>
+
+        <div class="detail-section">
+            <h2>Prévisions 7 jours</h2>
+            <div id="previsions"></div>
+        </div>
+
+        <footer class="button-group">
+            <a href="index.html" class="refresh-btn">Retour à l'accueil</a>
+        </footer>
+    </div>
+</body>
+</html>
