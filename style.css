@@ -1,6 +1,6 @@
-/* ==========================================
-   1. VARIABLES & CONFIGURATION
-   ========================================== */
+/* ==============================================================
+   || 1. VARIABLES & CONFIGURATION                             ||
+   ============================================================== */
 :root {
     --bg-color: #e0eafc;
     --accent-color: #6a11cb;
@@ -11,6 +11,9 @@
     --shadow-main: 0 0.9vh 2.8vh rgba(0, 0, 0, 0.2);
 }
 
+/* ==============================================================
+   || 2. BASE & BODY                                           ||
+   ============================================================== */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
@@ -24,9 +27,9 @@ body {
     margin: 0;
 }
 
-/* ==========================================
-   2. STRUCTURE DE MISE EN PAGE
-   ========================================== */
+/* ==============================================================
+   || 3. STRUCTURE DE MISE EN PAGE                            ||
+   ============================================================== */
 .container {
     width: 100%;
     display: flex;
@@ -48,9 +51,19 @@ body {
     position: relative; /* Nécessaire pour le bouton supprimer absolu */
 }
 
-/* ==========================================
-   3. TYPOGRAPHIE & TITRES
-   ========================================== */
+.detail-section {
+    background: var(--card-bg);
+    margin: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    width: 90%;
+    max-width: 800px;
+}
+
+/* ==============================================================
+   || 4. TYPOGRAPHIE & TITRES                                  ||
+   ============================================================== */
 h1 {
     margin-top: 0;
     font-weight: 300; /* Environ 2rem */
@@ -68,9 +81,9 @@ h1 {
     color: var(--accent-color);
 }
 
-/* ==========================================
-   4. ICONES & AFFICHAGE MÉTÉO
-   ========================================== */
+/* ==============================================================
+   || 5. ICONES & AFFICHAGE MÉTÉO                             ||
+   ============================================================== */
 .meteo {
     display: grid;
     grid-template-columns: 1fr;
@@ -89,9 +102,9 @@ h1 {
     font-size: 1.5vh;
 }
 
-/* ==========================================
-   5. GRILLE DE DÉTAILS
-   ========================================== */
+/* ==============================================================
+   || 6. GRILLE DE DÉTAILS                                    ||
+   ============================================================== */
 .weather-details {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -120,9 +133,34 @@ h1 {
     font-weight: 600;
 }
 
-/* ==========================================
-   6. BOUTONS & INTERACTION
-   ========================================== */
+/* ==============================================================
+   || 7. TABLEAU                                               ||
+   ============================================================== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+th {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: var(--accent-color);
+}
+
+canvas {
+    max-height: 300px;
+}
+
+/* ==============================================================
+   || 8. BOUTONS & INTERACTION                                ||
+   ============================================================== */
 .refresh-btn {
     margin-top: 2.3vh;
     padding: 0.9vh 1.8vh;
@@ -160,6 +198,26 @@ h1 {
     transform: scale(1.1);
 }
 
+.btn-Favoris {
+    background: #6a11cb;
+    color: #ffddd9;
+    font-size: 1.3vh;
+    font-weight: 550;
+    border: none;
+    border-radius: 2.3vh;
+    cursor: pointer;
+    padding: 0.5vh 1vh;
+    text-align: center;
+    transition: transform 0.2s;
+    position: absolute;
+    top: 0.5vh;
+    left: 0.5vh;
+}
+
+.btn-Favoris:hover {
+    transform: scale(1.1);
+}
+
 .button-sticky {
     background: var(--card-bg);
     backdrop-filter: blur(10px);
@@ -171,4 +229,187 @@ h1 {
     font-size: 1.7vh;
     position: sticky;
     bottom: 1vh;
+}
+
+.card .refresh-btn {
+    display: inline-block;
+    width: auto;
+    min-width: 150px;
+    margin-bottom: 10px;
+}
+
+/* ==============================================================
+   || 9. MENU FAVORIS                                         ||
+   ============================================================== */
+#menu-favoris {
+    position: fixed;
+    top: 6vh;
+    right: 1vh;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-main);
+    border-radius: 1.8vh;
+    padding: 1vh;
+    min-width: 150px;
+    display: none;
+    z-index: 10;
+}
+
+#menu-favoris button {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 1vh;
+    cursor: pointer;
+    text-align: left;
+    font-size: 1.5vh;
+    border-radius: 1vh;
+}
+
+#menu-favoris button:hover {
+    background: rgba(106, 17, 203, 0.1);
+}
+
+/* ==============================================================
+   || 10. FORMULAIRE — POPUP FILTRE                           ||
+   ============================================================== */
+.filtre-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+
+    width: clamp(280px, 90vw, 480px);
+    padding: 1.6rem;
+
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 1.8vh;
+    box-shadow: var(--shadow-main);
+}
+
+.filtre-popup form {
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr;
+    gap: 0.8rem 1rem;
+    align-items: center;
+}
+
+.filtre-popup input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+    accent-color: var(--accent, #7c9ff5);
+}
+
+.filtre-popup label {
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.filtre-popup button[type="submit"] {
+    grid-column: 1 / -1;
+    justify-self: center;
+    margin-top: 0.4rem;
+    padding: 0.5rem 2rem;
+    background: var(--accent, #7c9ff5);
+    color: #fff;
+    border: none;
+    border-radius: 0.6rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ==============================================================
+   || 11. FORMULAIRE — POPUP AJOUT DE VILLE                   ||
+   ============================================================== */
+.add-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+
+    width: clamp(280px, 90vw, 420px);
+    padding: 1.6rem;
+
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 1.8vh;
+    box-shadow: var(--shadow-main);
+}
+
+.add-popup form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+}
+
+/* ─── Inputs texte et number ─────────────────────────────── */
+.add-popup input[type="text"],
+.add-popup input[type="number"] {
+    width: 100%;
+    padding: 0.5rem 0.8rem;
+    background: transparent;
+    border: 1px solid var(--text-primary, #f0f0f0);
+    border-radius: 0.6rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
+}
+
+.add-popup input[type="text"]:focus,
+.add-popup input[type="number"]:focus {
+    border-color: var(--accent, #7c9ff5);
+}
+
+/* ─── Séparateur "ou par coordonnées" ────────────────────── */
+.add-popup p {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    opacity: 0.5;
+    margin: 0.2rem 0;
+}
+
+/* ─── Ligne latitude / longitude côte à côte ─────────────── */
+.add-popup .coords {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+}
+
+/* ─── Boutons ────────────────────────────────────────────── */
+.add-popup .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin-top: 0.4rem;
+}
+
+.add-popup button[type="submit"],
+.add-popup button[type="button"] {
+    padding: 0.5rem 0;
+    border: none;
+    border-radius: 0.6rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.add-popup button[type="submit"] {
+    background: var(--accent, #7c9ff5);
+    color: #fff;
+}
+
+.add-popup button[type="button"] {
+    background: transparent;
+    border: 1px solid var(--text-primary, #f0f0f0);
+    color: var(--text-primary);
 }
