@@ -1,4 +1,6 @@
-// ─── 1. UTILITAIRES ─────────────────────────────────────────
+// ==============================================================
+// || 1. UTILITAIRES                                           ||
+// ==============================================================
 
 function getDataSync(link) {
     try {
@@ -35,7 +37,9 @@ function addOptionToDatalist(datalistId, list) {
 }
 
 
-// ─── 2. PERSISTANCE LOCAL STORAGE ───────────────────────────
+// ==============================================================
+// || 2. PERSISTANCE LOCAL STORAGE                             ||
+// ==============================================================
 //
 //  Clés utilisées :
 //    "meteo_villes"      → [{id, nom, latitude, longitude}, ...]
@@ -104,7 +108,9 @@ const storage = {
 };
 
 
-// ─── 3. MODÈLE : CLASSE VILLE ────────────────────────────────
+// ==============================================================
+// || 3. MODÈLE : CLASSE VILLE                                 ||
+// ==============================================================
 
 class Ville {
     constructor(id, nom, latitude, longitude) {
@@ -154,7 +160,9 @@ function miseAJourFile(nom, file = villeFile) {
 }
 
 
-// ─── 4. CONSTRUCTION DES CARDS ───────────────────────────────
+// ==============================================================
+// || 4. CONSTRUCTION DES CARDS                                ||
+// ==============================================================
 
 const container = document.querySelector('.container');
 
@@ -224,8 +232,8 @@ function newCard(id) {
 
     detailCard("temp-min", id, weather_details);
     detailCard("temp-max", id, weather_details);
-    detailCard("humidity", id, weather_details);
-    detailCard("wind", id, weather_details);
+    detailCard("humidite", id, weather_details);
+    detailCard("vent", id, weather_details);
 
     let btnDetails = document.createElement('button');
     btnDetails.className = "refresh-btn";
@@ -261,11 +269,12 @@ function detailCard(parm, id, weather_details) {
 }
 
 
-// ─── 5. MISE À JOUR DES CARDS ────────────────────────────────
+// ==============================================================
+// || 5. MISE À JOUR DES CARDS                                 ||
+// ==============================================================
 
 function updateCard(ville, data) {
     const id = ville.getId();
-    //document.getElementById('city' + id).innerHTML = ville.getNom();
     const cityNom = ville.getNom() || `${ville.getLatitude().toFixed(2)}, ${ville.getLongitude().toFixed(2)}`;
     document.getElementById('city' + id).innerHTML = cityNom;
     document.getElementById('date' + id).innerHTML = convertDate(data.daily.time[0]);
@@ -274,8 +283,8 @@ function updateCard(ville, data) {
     document.getElementById('temp-main' + id).innerHTML = data.current.temperature_2m + data.current_units.temperature_2m;
     document.getElementById('temp-min' + id).innerHTML = data.daily.temperature_2m_min[0] + data.daily_units.temperature_2m_min;
     document.getElementById('temp-max' + id).innerHTML = data.daily.temperature_2m_max[0] + data.daily_units.temperature_2m_max;
-    document.getElementById('humidity' + id).innerHTML = data.current.relative_humidity_2m + data.current_units.relative_humidity_2m;
-    document.getElementById('wind' + id).innerHTML = data.current.wind_speed_10m + data.current_units.wind_speed_10m;
+    document.getElementById('humidite' + id).innerHTML = data.current.relative_humidity_2m + data.current_units.relative_humidity_2m;
+    document.getElementById('vent' + id).innerHTML = data.current.wind_speed_10m + data.current_units.wind_speed_10m;
 }
 
 function createCard(ville) {
@@ -292,7 +301,9 @@ function refresh() {
 }
 
 
-// ─── 6. AJOUT DE CARD ────────────────────────────────────────
+// ==============================================================
+// || 6. AJOUT DE CARD                                         ||
+// ==============================================================
 
 // function addCard() {
 //     const id = villes.length + 1;
@@ -417,6 +428,11 @@ function addCard() {
                 ville = new Ville(id, null, lat, lon);
             }
         } else if (nom) {
+            //si la ville existe déjà dans les villes affichées, on ne la rajoute pas
+            if (villes.some(v => v.getNom() && v.getNom().toLowerCase() === nom.toLowerCase())) {
+                alert("Cette ville est déjà affichée.");
+                return;
+            }
             ville = createVille(id, nom);
         } else {
             alert("Renseignez un nom ou des coordonnées.");
@@ -442,7 +458,9 @@ const addCardBtn = document.getElementById('add-card-btn');
 if (addCardBtn) addCardBtn.addEventListener('click', addCard);
 
 
-// ─── 7. FILTRE (POPUP) ───────────────────────────────────────
+// ==============================================================
+// || 7. FILTRE (POPUP)                                        ||
+// ==============================================================
 
 const FIELDS = [
     { id: "temp-min-checkbox", label: "Température minimale", cls: "temp-min" },
@@ -485,12 +503,91 @@ function filtre() {
         form.appendChild(lbl);
     });
 
+    let maxLatLabel = document.createElement('label');
+    maxLatLabel.htmlFor = "max-lat";
+    maxLatLabel.innerHTML = "Latitude max :";
+    form.appendChild(maxLatLabel);
+
+    let maxLatInput = document.createElement('input');
+    maxLatInput.type = "number";
+    maxLatInput.id = "max-lat";
+    maxLatInput.step = "any";
+    form.appendChild(maxLatInput);
+    
+    let maxLonLabel = document.createElement('label');
+    maxLonLabel.htmlFor = "max-lon";
+    maxLonLabel.innerHTML = "Longitude max :";
+    form.appendChild(maxLonLabel);
+
+    let maxLonInput = document.createElement('input');
+    maxLonInput.type = "number";
+    maxLonInput.id = "max-lon";
+    maxLonInput.step = "any";
+    form.appendChild(maxLonInput);
+
+    let minLatLabel = document.createElement('label');
+    minLatLabel.htmlFor = "min-lat";
+    minLatLabel.innerHTML = "Latitude min :";
+    form.appendChild(minLatLabel);
+
+    let minLatInput = document.createElement('input');
+    minLatInput.type = "number";
+    minLatInput.id = "min-lat";
+    minLatInput.step = "any";
+    form.appendChild(minLatInput);
+
+    let minLonLabel = document.createElement('label');
+    minLonLabel.htmlFor = "min-lon";
+    minLonLabel.innerHTML = "Longitude min :";
+    form.appendChild(minLonLabel);
+
+    let minLonInput = document.createElement('input');
+    minLonInput.type = "number";
+    minLonInput.id = "min-lon";
+    minLonInput.step = "any";
+    form.appendChild(minLonInput);
+
+    let lieuLabel = document.createElement('label');
+    lieuLabel.htmlFor = "lieu";
+    lieuLabel.innerHTML = "Lieu :";
+    form.appendChild(lieuLabel);
+
+    let lieuInput = document.createElement('input');
+    lieuInput.type = "text";
+    lieuInput.id = "lieu";
+    form.appendChild(lieuInput);
+
     let submitButton = document.createElement('button');
     submitButton.type = "submit";
     submitButton.innerHTML = "Valider";
     form.appendChild(submitButton);
 
     form.addEventListener('submit', (e) => {
+        let lieu = lieuInput.value.trim();
+        let minLat = 0, maxLat = 0, minLon = 0, maxLon = 0;
+        
+        if (lieu) {
+            let list = boundingBox(lieu);
+            minLat = list[0];
+            maxLat = list[1];
+            minLon = list[2];
+            maxLon = list[3];
+        } else {
+            minLat = parseFloat(minLatInput.value);
+            maxLat = parseFloat(maxLatInput.value);
+            minLon = parseFloat(minLonInput.value);
+            maxLon = parseFloat(maxLonInput.value);
+        }
+
+
+        if(!minLat || !maxLat || !minLon || !maxLon) {
+            showAllVilles();
+        }else if (minLat < -90 || maxLat > 90 || minLon < -180 || maxLon > 180 || minLat > maxLat || minLon > maxLon) {
+            alert("Coordonnées invalides. Latitude doit être entre -90 et 90, Longitude entre -180 et 180, et les min doivent être inférieurs aux max.");
+        } else {
+            boundingBoxFilter(minLat, maxLat, minLon, maxLon);
+        }
+
         e.preventDefault();
         const nouvellesPrefs = {};
         FIELDS.forEach(f => {
@@ -506,7 +603,118 @@ const filtreBtn = document.getElementById('filtre');
 if (filtreBtn) filtreBtn.addEventListener('click', filtre);
 
 
-// ─── 8. NAVIGATION VERS DETAILS ──────────────────────────────
+// ==============================================================
+// || 8. FILTRAGE GÉOGRAPHIQUE                                 ||
+// ==============================================================
+
+function boundingBoxFilter(minLat, maxLat, minLon, maxLon) {
+    villes.forEach(ville => {
+        if (isVilleInZone(ville, minLat, maxLat, minLon, maxLon)) {
+            const card = document.getElementById('card' + ville.getId());
+            card.style.display = "";
+        } else {
+            const card = document.getElementById('card' + ville.getId());
+            card.style.display = "none";
+        }
+    });
+}
+
+function isVilleInZone(ville, minLat, maxLat, minLon, maxLon) {
+    if (ville.getLongitude() >= minLon && ville.getLongitude() <= maxLon && ville.getLatitude() >= minLat && ville.getLatitude() <= maxLat) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function showAllVilles() {
+    villes.forEach(ville => {
+        const card = document.getElementById('card' + ville.getId());
+        card.style.display = "";
+    });
+}
+
+function boundingBox(nom) {
+    const url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + nom;
+    const data = getDataSync(url);
+    if (data && data.length > 0) {
+        const city = data[0];
+        const bbox = city.boundingbox;
+        return [parseFloat(bbox[0]), parseFloat(bbox[1]), parseFloat(bbox[2]), parseFloat(bbox[3])]; // [minLat, maxLat, minLon, maxLon]
+    }
+    return null;
+}
+
+
+// ==============================================================
+// || 9. FAVORIS                                               ||
+// ==============================================================
+
+// --- BOUTON MES FAVORIS ---
+if (document.getElementById('hamburger')) {
+    document.getElementById('hamburger').addEventListener('click', () => MesFavoris());
+}
+
+function MesFavoris() {
+    let menu = document.getElementById('menu-favoris');
+    let favoris = JSON.parse(localStorage.getItem('favoris')) || [];
+    menu.innerHTML = "";
+
+    if (favoris.length === 0) { alert("Aucun favori."); return; }
+
+    favoris.forEach(f => {
+        let btn = document.createElement('button');
+        btn.textContent = f.nom;
+        btn.style = "display:block; width:100%; background:none; border:none; padding:1vh; cursor:pointer; font-size:1.5vh;";
+        btn.onclick = () => {
+            //on ajout la ville si elle n 'esp pas deja afficher
+            if (villes.some(v => v.getLatitude() === f.latitude && v.getLongitude() === f.longitude)) {
+                alert("Cette ville est déjà affichée.");
+                return;
+            }
+            let ville = new Ville(villes.length + 1, f.nom, f.latitude, f.longitude);
+            villes.push(ville);
+            createCard(ville);
+            menu.style.display = "none";
+        };
+        menu.appendChild(btn);
+    });
+
+    menu.style.display = menu.style.display === "none" ? "block" : "none";
+};
+
+function addFav(id) {
+    const ville = villes.find(v => v.getId() === id);
+    let nom = ville.getNom()
+    const lat = ville.getLatitude();
+    const lon = ville.getLongitude()
+    if (ville) {
+        let favoris = JSON.parse(localStorage.getItem('favoris')) || [];
+        if (!favoris.some(f => f.latitude === lat && f.longitude === lon)) {
+            if(nom) {
+                favoris.push({ id: ville.getId(), nom: nom, latitude: lat, longitude: lon });
+            }else {
+                nom = `${lat.toFixed(2)}, ${lon.toFixed(2)}`
+                favoris.push({ id: ville.getId(), nom: nom, latitude: lat, longitude: lon });
+            }
+            
+            localStorage.setItem('favoris', JSON.stringify(favoris));
+            alert(nom + " ajouté aux favoris !");
+        } else {
+            if(nom) {
+                alert(nom + " est déjà dans les favoris.");
+            }else {
+                alert(lat + ", " + lon + " est déjà dans les favoris.")
+            }
+
+        }
+    }
+}
+
+
+// ==============================================================
+// || 10. NAVIGATION VERS DETAILS                              ||
+// ==============================================================
 
 function goToDetails(nom, lat, lon) {
     localStorage.setItem('current', nom);
@@ -516,7 +724,9 @@ function goToDetails(nom, lat, lon) {
 }
 
 
-// ─── 9. PAGE DETAILS ─────────────────────────────────────────
+// ==============================================================
+// || 11. PAGE DETAILS                                         ||
+// ==============================================================
 
 function afficherVilleDetails() {
     const nom = localStorage.getItem('current');
@@ -599,79 +809,6 @@ function afficherGraphique() {
     }
 }
 
-
-// ─── 10. LANCEMENT ───────────────────────────────────────────
-
-const VILLE_DEFAUT = [
-    { id: 1, nom: "Blois", latitude: 47.5876861, longitude: 1.3337639 }
-];
-
-if (window.location.pathname.endsWith("details.html")) {
-    document.addEventListener('DOMContentLoaded', () => {
-        afficherVilleDetails();
-        afficherPrevisions();
-        afficherGraphique();
-    });
-} else {
-    // Page principale : restaure les villes sauvegardées et les préférences
-    document.addEventListener('DOMContentLoaded', () => {
-
-        if (storage.chargerVilles().length === 0) {
-            localStorage.setItem(LS_VILLES, JSON.stringify(VILLE_DEFAUT));
-        }
-
-        storage.chargerVilles().forEach(v => {
-            const ville = new Ville(v.id, v.nom, v.latitude, v.longitude);
-            villes.push(ville);
-            createCard(ville);
-        });
-        appliquerPreferences();
-    });
-}
-
-// ─── 11. DEV ───────────────────────────────────────────
-// --- BOUTON MES FAVORIS ---
-if (document.getElementById('hamburger')) {
-    document.getElementById('hamburger').addEventListener('click', () => MesFavoris());
-}
-
-function MesFavoris() {
-    let menu = document.getElementById('menu-favoris');
-    let favoris = JSON.parse(localStorage.getItem('favoris')) || [];
-    menu.innerHTML = "";
-
-    if (favoris.length === 0) { alert("Aucun favori."); return; }
-
-    favoris.forEach(f => {
-        let btn = document.createElement('button');
-        btn.textContent = f.nom;
-        btn.style = "display:block; width:100%; background:none; border:none; padding:1vh; cursor:pointer; font-size:1.5vh;";
-        btn.onclick = () => {
-            let ville = new Ville(villes.length + 1, f.nom, f.latitude, f.longitude);
-            villes.push(ville);
-            createCard(ville);
-            menu.style.display = "none";
-        };
-        menu.appendChild(btn);
-    });
-
-    menu.style.display = menu.style.display === "none" ? "block" : "none";
-};
-
-function addFav(id) {
-    const ville = villes.find(v => v.getId() === id);
-    if (ville) {
-        let favoris = JSON.parse(localStorage.getItem('favoris')) || [];
-        if (!favoris.some(f => f.id === ville.getId())) {
-            favoris.push({ id: ville.getId(), nom: ville.getNom(), latitude: ville.getLatitude(), longitude: ville.getLongitude() });
-            localStorage.setItem('favoris', JSON.stringify(favoris));
-            alert(ville.getNom() + " ajouté aux favoris !");
-        } else {
-            alert(ville.getNom() + " est déjà dans les favoris.");
-        }
-    }
-}
-
 function afficherPrevisions() {
     const lat = localStorage.getItem('lat');
     const lon = localStorage.getItem('lon');
@@ -729,4 +866,36 @@ function afficherPrevisions() {
             };
         }
     }
+}
+
+
+// ==============================================================
+// || 12. LANCEMENT                                            ||
+// ==============================================================
+
+const VILLE_DEFAUT = [
+    { id: 1, nom: "Blois", latitude: 47.5876861, longitude: 1.3337639 }
+];
+
+if (window.location.pathname.endsWith("details.html")) {
+    document.addEventListener('DOMContentLoaded', () => {
+        afficherVilleDetails();
+        afficherPrevisions();
+        afficherGraphique();
+    });
+} else {
+    // Page principale : restaure les villes sauvegardées et les préférences
+    document.addEventListener('DOMContentLoaded', () => {
+
+        if (storage.chargerVilles().length === 0) {
+            localStorage.setItem(LS_VILLES, JSON.stringify(VILLE_DEFAUT));
+        }
+
+        storage.chargerVilles().forEach(v => {
+            const ville = new Ville(v.id, v.nom, v.latitude, v.longitude);
+            villes.push(ville);
+            createCard(ville);
+        });
+        appliquerPreferences();
+    });
 }
