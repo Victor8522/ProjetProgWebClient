@@ -178,6 +178,14 @@ function newCard(id) {
     };
     header.appendChild(btnSupprimer);
 
+    // --- BOUTON FAVORIS ---
+    let btnFav = document.createElement('button');
+    btnFav.className = "btn-Favoris";
+    btnFav.textContent = "Ajouter au Favoris";
+    btnFav.onclick = () => addFav(id);
+    card.appendChild(btnFav);
+
+
     let city = document.createElement('h1');
     city.id = "city" + id;
     header.appendChild(city);
@@ -301,10 +309,13 @@ function refresh() {
 // }
 
 function addCard() {
+    const divPopup = document.querySelector('.popup');
+    divPopup.innerHTML = ""; // Clear previous content
+
     // ── Popup ──────────────────────────────────────────────
     const popup = document.createElement('div');
     popup.className = "add-popup";
-    document.body.appendChild(popup);
+    divPopup.appendChild(popup);
 
     const form = document.createElement('form');
     popup.appendChild(form);
@@ -398,7 +409,11 @@ function addCard() {
             if (data && data.results) {
                 nomFinal = data.results[0].name;
                 ville = new Ville(id, nomFinal, lat, lon);
-            }else {
+            } else {
+                if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+                    alert("Coordonnées invalides. Latitude doit être entre -90 et 90, Longitude entre -180 et 180.");
+                    return;
+                }
                 ville = new Ville(id, null, lat, lon);
             }
         } else if (nom) {
@@ -413,7 +428,7 @@ function addCard() {
             createCard(ville);
             if (ville.getNom()) {
                 miseAJourFile(ville.getNom(), villeFile);
-            }else {
+            } else {
                 miseAJourFile(`${ville.getLatitude().toFixed(2)}`, latFile);
                 miseAJourFile(`${ville.getLongitude().toFixed(2)}`, lonFile);
             }
@@ -447,10 +462,12 @@ function appliquerPreferences() {
 
 function filtre() {
     const prefs = storage.chargerPreferences();
+    const divPopup = document.querySelector('.popup');
+    divPopup.innerHTML = ""; // Clear previous content
 
     let filtrePopup = document.createElement('div');
     filtrePopup.className = "filtre-popup";
-    document.body.appendChild(filtrePopup);
+    divPopup.appendChild(filtrePopup);
 
     let form = document.createElement('form');
     filtrePopup.appendChild(form);
@@ -481,7 +498,7 @@ function filtre() {
         });
         storage.sauvegarderPreferences(nouvellesPrefs); // ← persist préférences
         appliquerPreferences();
-        document.body.removeChild(filtrePopup);
+        filtrePopup.remove();
     });
 }
 
@@ -610,4 +627,106 @@ if (window.location.pathname.endsWith("details.html")) {
         });
         appliquerPreferences();
     });
+}
+
+// ─── 11. DEV ───────────────────────────────────────────
+// --- BOUTON MES FAVORIS ---
+if (document.getElementById('hamburger')) {
+    document.getElementById('hamburger').addEventListener('click', () => MesFavoris());
+}
+
+function MesFavoris() {
+    let menu = document.getElementById('menu-favoris');
+    let favoris = JSON.parse(localStorage.getItem('favoris')) || [];
+    menu.innerHTML = "";
+
+    if (favoris.length === 0) { alert("Aucun favori."); return; }
+
+    favoris.forEach(f => {
+        let btn = document.createElement('button');
+        btn.textContent = f.nom;
+        btn.style = "display:block; width:100%; background:none; border:none; padding:1vh; cursor:pointer; font-size:1.5vh;";
+        btn.onclick = () => {
+            let ville = new Ville(villes.length + 1, f.nom, f.latitude, f.longitude);
+            villes.push(ville);
+            createCard(ville);
+            menu.style.display = "none";
+        };
+        menu.appendChild(btn);
+    });
+
+    menu.style.display = menu.style.display === "none" ? "block" : "none";
+};
+
+function addFav(id) {
+    const ville = villes.find(v => v.getId() === id);
+    if (ville) {
+        let favoris = JSON.parse(localStorage.getItem('favoris')) || [];
+        if (!favoris.some(f => f.id === ville.getId())) {
+            favoris.push({ id: ville.getId(), nom: ville.getNom(), latitude: ville.getLatitude(), longitude: ville.getLongitude() });
+            localStorage.setItem('favoris', JSON.stringify(favoris));
+            alert(ville.getNom() + " ajouté aux favoris !");
+        } else {
+            alert(ville.getNom() + " est déjà dans les favoris.");
+        }
+    }
+}
+
+function afficherPrevisions() {
+    const lat = localStorage.getItem('lat');
+    const lon = localStorage.getItem('lon');
+
+    if (lat && lon) {
+        let url =   `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`
+                +   `&hourly=temperature_2m,weather_code`
+                +   `&daily=weather_code`
+                +   `&timezone=auto`
+                +   `&forecast_days=7`;
+            let data = getDataSync(url);
+
+        if (data) {
+            let previsionsDiv = document.getElementById('previsions');
+            let hausse = 0;
+            baisse = 0;
+            for (let i = 0; i < data.daily.weather_code.length - 1; i++) {
+                if (data.daily.weather_code[i] < data.daily.weather_code[i + 1]) baisse++;
+                else hausse++;
+            }
+            previsionsDiv.innerHTML = hausse > baisse ? "<p><strong>↑</strong> Temps à l'amélioration</p>" : "<p><strong>↓</strong> Temps à la détérioration</p>";
+
+            // Grouper par jour
+            let jours = {};
+            for (let i = 0; i < data.hourly.time.length; i++) {
+                let date = data.hourly.time[i].split("T")[0];
+                let heure = data.hourly.time[i].split("T")[1];
+                if (!jours[date]) jours[date] = [];
+                jours[date].push({ heure, temp: data.hourly.temperature_2m[i], weather_code: data.hourly.weather_code[i] });
+            }
+            // Afficher
+            let today = new Date().toISOString().split("T")[0];
+            for (let date in jours) {
+                if (date === today) continue;
+                let jourDiv = document.createElement('div');
+                jourDiv.className = "jour-prevision";
+
+                let header = document.createElement('div');
+                header.innerHTML = `<strong>${convertDate(date)}</strong>`;
+                jourDiv.appendChild(header);
+
+                let heuresDiv = document.createElement('div');
+
+                jours[date].forEach(e => {
+                    let periode = (parseInt(e.heure) >= 7 && parseInt(e.heure) < 20) ? "day" : "night";
+                    let infos = code["" + e.weather_code];
+                    let ligne = document.createElement('div');
+                    ligne.innerHTML = `<span>${e.heure}</span> <img src="${infos[periode].image}" width="30"> <span>${infos[periode].description}</span> <span>${e.temp}°C</span>`;
+                    heuresDiv.appendChild(ligne);
+                });
+
+                jourDiv.appendChild(heuresDiv);
+                previsionsDiv.appendChild(jourDiv);
+
+            };
+        }
+    }
 }
