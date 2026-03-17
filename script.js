@@ -42,17 +42,19 @@ function addOptionToDatalist(datalistId, list) {
 //    "meteo_recherches"  → ["Paris", "Lyon", ...]  (max 10)
 //    "meteo_preferences" → {"temp-min": true, "temp-max": true, ...}
 
-const LS_VILLES      = "meteo_villes";
-const LS_RECHERCHES  = "meteo_recherches";
+const LS_VILLES = "meteo_villes";
+const LS_RECHERCHES_VILLES = "meteo_recherches_villes";
+const LS_RECHERCHES_LAT = "meteo_recherches_lat";
+const LS_RECHERCHES_LON = "meteo_recherches_lon";
 const LS_PREFERENCES = "meteo_preferences";
 
 const storage = {
 
     sauvegarderVilles() {
         const data = villes.map(v => ({
-            id:        v.getId(),
-            nom:       v.getNom(),
-            latitude:  v.getLatitude(),
+            id: v.getId(),
+            nom: v.getNom(),
+            latitude: v.getLatitude(),
             longitude: v.getLongitude()
         }));
         localStorage.setItem(LS_VILLES, JSON.stringify(data));
@@ -63,13 +65,28 @@ const storage = {
         catch { return []; }
     },
 
-    sauvegarderRecherches() {
-        localStorage.setItem(LS_RECHERCHES, JSON.stringify(villeFile));
+    sauvegarderRecherches(param = "ville") {
+        if (param === "ville") {
+            localStorage.setItem(LS_RECHERCHES_VILLES, JSON.stringify(villeFile));
+        } else if (param === "lat") {
+            localStorage.setItem(LS_RECHERCHES_LAT, JSON.stringify(latFile));
+        } else if (param === "lon") {
+            localStorage.setItem(LS_RECHERCHES_LON, JSON.stringify(lonFile));
+        }
     },
 
-    chargerRecherches() {
-        try { return JSON.parse(localStorage.getItem(LS_RECHERCHES)) || []; }
-        catch { return []; }
+    chargerRecherches(param = "ville") {
+        try {
+            if (param === "ville") {
+                return JSON.parse(localStorage.getItem(LS_RECHERCHES_VILLES)) || [];
+            } else if (param === "lat") {
+                return JSON.parse(localStorage.getItem(LS_RECHERCHES_LAT)) || [];
+            } else if (param === "lon") {
+                return JSON.parse(localStorage.getItem(LS_RECHERCHES_LON)) || [];
+            }
+        } catch {
+            return [];
+        }
     },
 
     sauvegarderPreferences(prefs) {
@@ -97,9 +114,9 @@ class Ville {
         this.longitude = longitude;
     }
 
-    getId()        { return this.id; }
-    getNom()       { return this.nom; }
-    getLatitude()  { return this.latitude; }
+    getId() { return this.id; }
+    getNom() { return this.nom; }
+    getLatitude() { return this.latitude; }
     getLongitude() { return this.longitude; }
 }
 
@@ -118,14 +135,22 @@ function createVille(id, nom) {
 const villes = [];
 
 // Chargé depuis le localStorage dès le démarrage
-const villeFile = storage.chargerRecherches();
+const villeFile = storage.chargerRecherches("ville");
+const latFile = storage.chargerRecherches("lat");
+const lonFile = storage.chargerRecherches("lon");
 
-function miseAJourFile(nom) {
-    const index = villeFile.indexOf(nom);
-    if (index !== -1) villeFile.splice(index, 1);
-    villeFile.unshift(nom);
-    if (villeFile.length > 10) villeFile.pop();
-    storage.sauvegarderRecherches(); // ← persist à chaque mise à jour
+function miseAJourFile(nom, file = villeFile) {
+    const index = file.indexOf(nom);
+    if (index !== -1) file.splice(index, 1);
+    file.unshift(nom);
+    if (file.length > 10) file.pop();
+    if (file === villeFile) {
+        storage.sauvegarderRecherches("ville"); // ← persist à chaque mise à jour
+    } else if (file === latFile) {
+        storage.sauvegarderRecherches("lat");
+    } else if (file === lonFile) {
+        storage.sauvegarderRecherches("lon");
+    }
 }
 
 
@@ -232,15 +257,17 @@ function detailCard(parm, id, weather_details) {
 
 function updateCard(ville, data) {
     const id = ville.getId();
-    document.getElementById('city'      + id).innerHTML = ville.getNom();
-    document.getElementById('date'      + id).innerHTML = convertDate(data.daily.time[0]);
-    document.getElementById('meteo'     + id).innerHTML = code["" + data.current.weather_code].day.description;
-    document.getElementById('image'     + id).src       = code["" + data.current.weather_code].day.image;
-    document.getElementById('temp-main' + id).innerHTML = data.current.temperature_2m       + data.current_units.temperature_2m;
-    document.getElementById('temp-min'  + id).innerHTML = data.daily.temperature_2m_min[0]  + data.daily_units.temperature_2m_min;
-    document.getElementById('temp-max'  + id).innerHTML = data.daily.temperature_2m_max[0]  + data.daily_units.temperature_2m_max;
-    document.getElementById('humidity'  + id).innerHTML = data.current.relative_humidity_2m + data.current_units.relative_humidity_2m;
-    document.getElementById('wind'      + id).innerHTML = data.current.wind_speed_10m        + data.current_units.wind_speed_10m;
+    //document.getElementById('city' + id).innerHTML = ville.getNom();
+    const cityNom = ville.getNom() || `${ville.getLatitude().toFixed(2)}, ${ville.getLongitude().toFixed(2)}`;
+    document.getElementById('city' + id).innerHTML = cityNom;
+    document.getElementById('date' + id).innerHTML = convertDate(data.daily.time[0]);
+    document.getElementById('meteo' + id).innerHTML = code["" + data.current.weather_code].day.description;
+    document.getElementById('image' + id).src = code["" + data.current.weather_code].day.image;
+    document.getElementById('temp-main' + id).innerHTML = data.current.temperature_2m + data.current_units.temperature_2m;
+    document.getElementById('temp-min' + id).innerHTML = data.daily.temperature_2m_min[0] + data.daily_units.temperature_2m_min;
+    document.getElementById('temp-max' + id).innerHTML = data.daily.temperature_2m_max[0] + data.daily_units.temperature_2m_max;
+    document.getElementById('humidity' + id).innerHTML = data.current.relative_humidity_2m + data.current_units.relative_humidity_2m;
+    document.getElementById('wind' + id).innerHTML = data.current.wind_speed_10m + data.current_units.wind_speed_10m;
 }
 
 function createCard(ville) {
@@ -276,7 +303,7 @@ function refresh() {
 function addCard() {
     // ── Popup ──────────────────────────────────────────────
     const popup = document.createElement('div');
-    popup.className = "filtre-popup";
+    popup.className = "add-popup";
     document.body.appendChild(popup);
 
     const form = document.createElement('form');
@@ -303,30 +330,56 @@ function addCard() {
     ou.textContent = "— ou par coordonnées —";
     form.appendChild(ou);
 
-    // ── Coordonnées ────────────────────────────────────────
+    // ── Coordonnées dans un div.coords ─────────────────────
+    const coords = document.createElement('div');
+    coords.className = "coords";
+    form.appendChild(coords);
+
     const inputLat = document.createElement('input');
     inputLat.type = "number";
     inputLat.placeholder = "Latitude  (ex: 47.59)";
     inputLat.step = "any";
-    form.appendChild(inputLat);
+    coords.appendChild(inputLat);
+    const datalistLat = document.createElement('datalist');
+    datalistLat.id = "suggestions-lat";
+    latFile.forEach(lat => {
+        const option = document.createElement('option');
+        option.value = lat;
+        datalistLat.appendChild(option);
+    });
+    form.appendChild(datalistLat);
+    inputLat.setAttribute('list', 'suggestions-lat');
 
     const inputLon = document.createElement('input');
     inputLon.type = "number";
     inputLon.placeholder = "Longitude (ex: 1.32)";
     inputLon.step = "any";
-    form.appendChild(inputLon);
+    coords.appendChild(inputLon);
+    const datalistLon = document.createElement('datalist');
+    datalistLon.id = "suggestions-lon";
+    lonFile.forEach(lon => {
+        const option = document.createElement('option');
+        option.value = lon;
+        datalistLon.appendChild(option);
+    });
+    form.appendChild(datalistLon);
+    inputLon.setAttribute('list', 'suggestions-lon');
 
-    // ── Boutons ────────────────────────────────────────────
+    // ── Boutons dans un div.actions ────────────────────────
+    const actions = document.createElement('div');
+    actions.className = "actions";
+    form.appendChild(actions);
+
     const btnValider = document.createElement('button');
     btnValider.type = "submit";
     btnValider.textContent = "Ajouter";
-    form.appendChild(btnValider);
+    actions.appendChild(btnValider);
 
     const btnAnnuler = document.createElement('button');
     btnAnnuler.type = "button";
     btnAnnuler.textContent = "Annuler";
     btnAnnuler.onclick = () => popup.remove();
-    form.appendChild(btnAnnuler);
+    actions.appendChild(btnAnnuler);
 
     // ── Soumission ─────────────────────────────────────────
     form.addEventListener('submit', (e) => {
@@ -339,13 +392,16 @@ function addCard() {
         let ville = null;
 
         if (lat && lon) {
-            // Coordonnées renseignées : géocodage inverse pour récupérer le nom
             const url = `https://geocoding-api.open-meteo.com/v1/search?latitude=${lat}&longitude=${lon}&count=1&language=fr&format=json`;
             const data = getDataSync(url);
-            const nomFinal = (data && data.results) ? data.results[0].name : `${lat}, ${lon}`;
-            ville = new Ville(id, nomFinal, lat, lon);
+            let nomFinal;
+            if (data && data.results) {
+                nomFinal = data.results[0].name;
+                ville = new Ville(id, nomFinal, lat, lon);
+            }else {
+                ville = new Ville(id, null, lat, lon);
+            }
         } else if (nom) {
-            // Nom renseigné : géocodage normal
             ville = createVille(id, nom);
         } else {
             alert("Renseignez un nom ou des coordonnées.");
@@ -355,7 +411,12 @@ function addCard() {
         if (ville) {
             villes.push(ville);
             createCard(ville);
-            miseAJourFile(ville.getNom());
+            if (ville.getNom()) {
+                miseAJourFile(ville.getNom(), villeFile);
+            }else {
+                miseAJourFile(`${ville.getLatitude().toFixed(2)}`, latFile);
+                miseAJourFile(`${ville.getLongitude().toFixed(2)}`, lonFile);
+            }
             storage.sauvegarderVilles();
             popup.remove();
         }
@@ -371,8 +432,8 @@ if (addCardBtn) addCardBtn.addEventListener('click', addCard);
 const FIELDS = [
     { id: "temp-min-checkbox", label: "Température minimale", cls: "temp-min" },
     { id: "temp-max-checkbox", label: "Température maximale", cls: "temp-max" },
-    { id: "humidity-checkbox", label: "Humidité",             cls: "humidity" },
-    { id: "wind-checkbox",     label: "Vent",                 cls: "wind"     },
+    { id: "humidity-checkbox", label: "Humidité", cls: "humidity" },
+    { id: "wind-checkbox", label: "Vent", cls: "wind" },
 ];
 
 function appliquerPreferences() {
@@ -449,16 +510,16 @@ function afficherVilleDetails() {
     document.getElementById('ville-nom').innerText = nom;
 
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`
-              + `&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code&timezone=auto`;
+        + `&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code&timezone=auto`;
     const data = getDataSync(url);
 
     if (data) {
-        document.getElementById('detail-icon').src       = code["" + data.current.weather_code].day.image;
+        document.getElementById('detail-icon').src = code["" + data.current.weather_code].day.image;
         document.getElementById('detail-desc').innerText = code["" + data.current.weather_code].day.description;
-        document.getElementById('temp-val').innerText    = Math.round(data.current.temperature_2m);
-        document.getElementById('ressenti').innerText    = Math.round(data.current.apparent_temperature);
-        document.getElementById('humidite').innerText    = data.current.relative_humidity_2m;
-        document.getElementById('pluie').innerText       = data.current.precipitation || 0;
+        document.getElementById('temp-val').innerText = Math.round(data.current.temperature_2m);
+        document.getElementById('ressenti').innerText = Math.round(data.current.apparent_temperature);
+        document.getElementById('humidite').innerText = data.current.relative_humidity_2m;
+        document.getElementById('pluie').innerText = data.current.precipitation || 0;
     }
 }
 
@@ -468,7 +529,7 @@ function afficherPrevisions() {
     if (!lat || !lon) return;
 
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`
-              + `&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+        + `&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
     const data = getDataSync(url);
 
     if (data) {
@@ -494,7 +555,7 @@ function afficherGraphique() {
     if (!lat || !lon) return;
 
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`
-              + `&hourly=temperature_2m&timezone=auto&forecast_days=1`;
+        + `&hourly=temperature_2m&timezone=auto&forecast_days=1`;
     const data = getDataSync(url);
 
     if (data) {
@@ -524,6 +585,10 @@ function afficherGraphique() {
 
 // ─── 10. LANCEMENT ───────────────────────────────────────────
 
+const VILLE_DEFAUT = [
+    { id: 1, nom: "Blois", latitude: 47.5876861, longitude: 1.3337639 }
+];
+
 if (window.location.pathname.endsWith("details.html")) {
     document.addEventListener('DOMContentLoaded', () => {
         afficherVilleDetails();
@@ -533,6 +598,11 @@ if (window.location.pathname.endsWith("details.html")) {
 } else {
     // Page principale : restaure les villes sauvegardées et les préférences
     document.addEventListener('DOMContentLoaded', () => {
+
+        if (storage.chargerVilles().length === 0) {
+            localStorage.setItem(LS_VILLES, JSON.stringify(VILLE_DEFAUT));
+        }
+
         storage.chargerVilles().forEach(v => {
             const ville = new Ville(v.id, v.nom, v.latitude, v.longitude);
             villes.push(ville);

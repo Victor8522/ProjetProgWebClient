@@ -264,3 +264,91 @@ canvas {
     font-weight: 600;
     cursor: pointer;
 }
+
+/* ─── Popup ajout de ville ───────────────────────────────── */
+.add-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+
+    width: clamp(280px, 90vw, 420px);
+    padding: 1.6rem;
+
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 1.8vh;
+    box-shadow: var(--shadow-main);
+}
+
+.add-popup form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+}
+
+/* ─── Inputs texte et number ─────────────────────────────── */
+.add-popup input[type="text"],
+.add-popup input[type="number"] {
+    width: 100%;
+    padding: 0.5rem 0.8rem;
+    background: transparent;
+    border: 1px solid var(--text-primary, #f0f0f0);
+    border-radius: 0.6rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
+}
+
+.add-popup input[type="text"]:focus,
+.add-popup input[type="number"]:focus {
+    border-color: var(--accent, #7c9ff5);
+}
+
+/* ─── Séparateur "ou par coordonnées" ────────────────────── */
+.add-popup p {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    opacity: 0.5;
+    margin: 0.2rem 0;
+}
+
+/* ─── Ligne latitude / longitude côte à côte ─────────────── */
+.add-popup .coords {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+}
+
+/* ─── Boutons ────────────────────────────────────────────── */
+.add-popup .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin-top: 0.4rem;
+}
+
+.add-popup button[type="submit"],
+.add-popup button[type="button"] {
+    padding: 0.5rem 0;
+    border: none;
+    border-radius: 0.6rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.add-popup button[type="submit"] {
+    background: var(--accent, #7c9ff5);
+    color: #fff;
+}
+
+.add-popup button[type="button"] {
+    background: transparent;
+    border: 1px solid var(--text-primary, #f0f0f0);
+    color: var(--text-primary);
+}
